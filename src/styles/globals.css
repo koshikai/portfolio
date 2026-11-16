@@ -31,18 +31,34 @@
 
   /* イージングの共通トークン。場所ごとに着地の感触が変わらないよう、ここに寄せる */
   --e-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  @supports (color: light-dark(white, black)) {
+    --background: light-dark(#fafaf7, #131315);
+    --surface: light-dark(#f3f2ec, #1a1a1d);
+    --foreground: light-dark(#17171a, #ecebe7);
+    --muted: light-dark(#62626a, #8e8e88);
+    --border: light-dark(#e4e3dc, #2a2a2c);
+    --accent: light-dark(#c0392b, #e4675b);
+    --accent-weak: light-dark(rgba(192, 57, 43, 0.08), rgba(228, 103, 91, 0.12));
+  }
 }
 
 :root.dark,
 :root:has(> head > meta[name="color-scheme"][content="dark"]) {
   color-scheme: dark;
-  --background: #131315;
-  --surface: #1a1a1d;
-  --foreground: #ecebe7;
-  --muted: #8e8e88;
-  --border: #2a2a2c;
-  --accent: #e4675b;
-  --accent-weak: rgba(228, 103, 91, 0.12);
+}
+
+@supports not (color: light-dark(white, black)) {
+  :root.dark,
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) {
+    --background: #131315;
+    --surface: #1a1a1d;
+    --foreground: #ecebe7;
+    --muted: #8e8e88;
+    --border: #2a2a2c;
+    --accent: #e4675b;
+    --accent-weak: rgba(228, 103, 91, 0.12);
+  }
 }
 
 body {

@@ -160,7 +160,7 @@ function Home() {
       </section>
 
       {/* --- operate --- */}
-      <div className="rdx-band-outer">
+      <div className="rdx-band-outer rdx-deferred">
         <section id="operate" className="rdx-band" aria-labelledby="rdx-operate-heading">
           <div className="rdx-wrap">
             <SectionHead
@@ -205,7 +205,7 @@ function Home() {
       </div>
 
       {/* --- research --- */}
-      <section id="research" className="rdx-wrap rdx-section" aria-labelledby="rdx-research-heading">
+      <section id="research" className="rdx-wrap rdx-section rdx-deferred" aria-labelledby="rdx-research-heading">
         <SectionHead
           id="rdx-research-heading"
           label="03"
@@ -223,7 +223,7 @@ function Home() {
       </section>
 
       {/* --- stack --- */}
-      <section className="rdx-wrap rdx-section" aria-labelledby="rdx-stack-heading">
+      <section className="rdx-wrap rdx-section rdx-deferred" aria-labelledby="rdx-stack-heading">
         <SectionHead
           id="rdx-stack-heading"
           label="04"

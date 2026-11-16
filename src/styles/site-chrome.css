@@ -40,7 +40,7 @@
   min-height: 40px;
   margin-right: 12px;
   color: var(--foreground);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -56,9 +56,10 @@
   align-items: center;
   min-height: 40px;
   padding-inline: 12px;
+  border: 1px solid transparent;
   border-radius: 999px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
   transition:
     color 0.3s var(--e-out),
@@ -132,26 +133,64 @@
 .site-nav-burger::after {
   bottom: 0;
 }
-[aria-expanded="true"] > .site-nav-burger::before {
+[aria-expanded="true"] > .site-nav-burger::before,
+.site-nav-burger--open::before {
   transform: translateY(4.25px) rotate(45deg);
 }
-[aria-expanded="true"] > .site-nav-burger::after {
+[aria-expanded="true"] > .site-nav-burger::after,
+.site-nav-burger--open::after {
   transform: translateY(-4.25px) rotate(-45deg);
 }
 
 .site-menu {
   position: fixed;
   inset: 0;
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: 0;
   padding: 96px clamp(20px, 5vw, 48px) 48px;
+  color: var(--foreground);
   background: color-mix(in srgb, var(--background) 92%, transparent);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   overflow-y: auto;
-  animation: site-menu-fade 0.3s var(--e-out) both;
+  opacity: 0;
+  transition-property: opacity, display, overlay;
+  transition-duration: 0.3s;
+  transition-timing-function: var(--e-out);
+  transition-behavior: allow-discrete;
+}
+.site-menu[open] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.site-menu[open]:where(:not([data-closing])) {
+  opacity: 1;
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+.site-menu:modal {
+  overscroll-behavior: contain;
+}
+.site-menu::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: transparent;
+}
+.site-menu-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+}
+.site-menu-nav {
+  display: flex;
+  flex-direction: column;
 }
 .site-menu a {
   display: flex;
@@ -160,12 +199,16 @@
   padding-block: 12px;
   border-bottom: 1px solid var(--border);
   color: var(--foreground);
-  font-size: 36px;
+  font-size: 2.25rem;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.2;
-  animation: site-menu-rise 0.4s var(--e-out) both;
-  animation-delay: calc(var(--i) * 50ms);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .site-menu[open]:where(:not([data-closing])) a {
+    animation: site-menu-rise 0.4s var(--e-out) both;
+    animation-delay: calc(var(--i) * 50ms);
+  }
 }
 .site-menu a[aria-current="page"] {
   color: var(--accent);
@@ -173,16 +216,11 @@
 .site-menu a span {
   color: var(--muted);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   letter-spacing: 0;
 }
 
-@keyframes site-menu-fade {
-  from {
-    opacity: 0;
-  }
-}
 @keyframes site-menu-rise {
   from {
     opacity: 0;
@@ -206,10 +244,12 @@
   .site-nav-burger::after {
     transition: none;
   }
+  .site-menu {
+    transition-duration: 0.1s;
+  }
   .site-nav-btn {
     transform: none !important;
   }
-  .site-menu,
   .site-menu a {
     animation: none;
   }
@@ -246,5 +286,18 @@ body:has(.rdx) .site-footer {
       animation: site-progress linear both;
       animation-timeline: scroll(root);
     }
+  }
+}
+
+@media (forced-colors: active) {
+  .site-nav {
+    border-color: CanvasText;
+  }
+  .site-nav-links a[aria-current="page"] {
+    border-color: Highlight;
+  }
+  .site-menu a[aria-current="page"] {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 }

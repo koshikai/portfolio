@@ -69,8 +69,19 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     hr: (props) => (
       <hr className="my-8 border-border" {...props} />
     ),
-    img: ({ alt = "", ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
-      <img className="my-6 h-auto max-w-full rounded-2xl border border-border" alt={alt} {...props} />
+    img: ({
+      alt = "",
+      loading = "lazy",
+      decoding = "async",
+      ...props
+    }: React.ImgHTMLAttributes<HTMLImageElement>) => (
+      <img
+        className="my-6 h-auto max-w-full rounded-2xl border border-border"
+        alt={alt}
+        loading={loading}
+        decoding={decoding}
+        {...props}
+      />
     ),
     table: (props) => (
       <div className="my-6 overflow-x-auto">

@@ -1,18 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { isNavActive, primaryNav } from "@/lib/navigation";
 import { pad2 } from "@/lib/format";
 
+let supportsDisplayTransition: boolean | undefined;
+
+function canTransitionDisplay(): boolean {
+  if (supportsDisplayTransition !== undefined) return supportsDisplayTransition;
+  if (typeof window === "undefined" || !window.CSS?.supports?.("transition-behavior", "allow-discrete") || !document.body) {
+    return false;
+  }
+  const probe = document.createElement("div");
+  probe.style.cssText = "transition: display 1s allow-discrete !important; display: block;";
+  document.body.appendChild(probe);
+  void getComputedStyle(probe).display;
+  probe.style.display = "none";
+  supportsDisplayTransition = getComputedStyle(probe).display === "block";
+  probe.remove();
+  return supportsDisplayTransition;
+}
+
+function supportsTopLayerExit(): boolean {
+  return typeof window !== "undefined" && Boolean(window.CSS?.supports?.("overlay", "auto")) && canTransitionDisplay();
+}
+
+async function closeTopLayerDialog(dialog: HTMLDialogElement) {
+  if (!dialog.open) return;
+  if (!supportsTopLayerExit() && typeof dialog.getAnimations === "function") {
+    dialog.setAttribute("data-closing", "");
+    const animations = dialog.getAnimations({ subtree: true });
+    if (animations.length > 0) {
+      await Promise.race([
+        Promise.allSettled(animations.map((a) => a.finished)),
+        new Promise((r) => setTimeout(r, 400)),
+      ]);
+    }
+    if (!dialog.hasAttribute("data-closing")) return;
+    dialog.removeAttribute("data-closing");
+  }
+  if (dialog.open && typeof dialog.close === "function") {
+    dialog.close();
+  }
+}
+
 /**
  * 全ページ共通のヘッダー。上端から浮かせた小さなバーで、
- * 狭い画面では行き先を全画面のメニューにまとめる。
+ * 狭い画面では行き先を全画面のモーダルメニュー（<dialog>）にまとめる。
  * 見た目は `styles/site-chrome.css`。
  */
 export function SiteHeader() {
   const pathname = useLocation({ select: (location) => location.pathname });
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   // 下へ読み進めている間はバーを引っ込め、少しでも戻ったら出す
   useEffect(() => {
@@ -44,19 +86,19 @@ export function SiteHeader() {
     return () => mql.removeEventListener("change", onChange);
   }, []);
 
-  // メニューが開いている間は背面のスクロールを固定する
+  // ネイティブ <dialog> の showModal / close と React state を同期する
   useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open) {
+      dialog.removeAttribute("data-closing");
+      if (!dialog.open && typeof dialog.showModal === "function") {
+        dialog.showModal();
+      }
+    } else if (dialog.open) {
+      void closeTopLayerDialog(dialog);
+    }
   }, [open]);
 
   return (
@@ -89,8 +131,32 @@ export function SiteHeader() {
         </button>
       </header>
 
-      {open && (
-        <nav id="site-menu" aria-label="メニュー" className="site-menu">
+      <dialog
+        ref={dialogRef}
+        id="site-menu"
+        aria-label="メニュー"
+        className="site-menu"
+        onCancel={(event) => {
+          event.preventDefault();
+          setOpen(false);
+        }}
+        onClose={() => setOpen(false)}
+        onClick={(event) => {
+          if (event.target === dialogRef.current && navRef.current && !navRef.current.contains(event.target as Node)) {
+            setOpen(false);
+          }
+        }}
+      >
+        <button
+          type="button"
+          className="site-nav-btn site-menu-close"
+          onClick={() => setOpen(false)}
+          aria-label="メニューを閉じる"
+          autoFocus
+        >
+          <span className="site-nav-burger site-nav-burger--open" aria-hidden="true" />
+        </button>
+        <nav ref={navRef} aria-label="モバイルナビゲーション" className="site-menu-nav">
           {primaryNav.map((item, i) => (
             <Link
               key={item.href}
@@ -104,7 +170,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-      )}
+      </dialog>
     </>
   );
 }

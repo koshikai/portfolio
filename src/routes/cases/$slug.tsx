@@ -55,12 +55,12 @@ function CaseDetailPage() {
     <main id="main-content" className="flex-1" ref={ref}>
       <div className="rdx">
         <div className="rdx-wrap rdx-page-hero">
-          <nav aria-label="パンくずリスト" className="rdx-crumb">
+          <div className="rdx-crumb">
             <Link to={axis.href} className="rdx-back">
               <ArrowLeft aria-hidden="true" />
               {axis.section}
             </Link>
-          </nav>
+          </div>
           <SectionHead
             as="h1"
             small
