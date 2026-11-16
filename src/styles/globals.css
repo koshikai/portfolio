@@ -20,6 +20,7 @@
 /* デザインはライトを基準に決める。ダークは同じトークンの差し替えだけで
    成立させ、ダーク専用の UI 分岐は作らない。 */
 :root {
+  interpolate-size: allow-keywords;
   color-scheme: light;
   --background: #fafaf7;
   --surface: #f3f2ec;

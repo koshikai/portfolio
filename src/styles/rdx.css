@@ -875,13 +875,33 @@ a.rdx-work-media:hover img {
 }
 .rdx-pipe-step {
   position: relative;
-  display: grid;
-  grid-template-columns: 12px minmax(0, 1fr);
-  gap: 4px 16px;
   padding-bottom: 20px;
 }
 .rdx-pipe-step:last-child {
   padding-bottom: 0;
+}
+.rdx-pipe-btn {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 4px 16px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.rdx-pipe-btn:hover .rdx-pipe-node,
+.rdx-pipe-btn[aria-expanded="true"] .rdx-pipe-node {
+  border-color: var(--accent);
+}
+.rdx-pipe-btn[aria-expanded="true"] .rdx-pipe-node {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.rdx-pipe-btn[aria-expanded="true"] .rdx-pipe-name {
+  color: var(--accent);
 }
 /* 縦の接続線（モバイル） */
 .rdx-pipe-step:not(:last-child)::before {
@@ -995,10 +1015,12 @@ a.rdx-work-media:hover img {
     grid-template-columns: repeat(7, minmax(0, 1fr));
   }
   .rdx-pipe-step {
+    padding: 0 12px 0 0;
+  }
+  .rdx-pipe-btn {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 0 12px 0 0;
   }
   .rdx-pipe-step:not(:last-child)::before {
     top: 5.5px;
@@ -1019,6 +1041,98 @@ a.rdx-work-media:hover img {
     width: auto;
     height: 2px;
     animation-name: rdx-flow-x;
+  }
+}
+
+.rdx-pipe-hint {
+  color: var(--soft);
+  opacity: 0.85;
+}
+
+.rdx-pipe-drawer {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  block-size: auto;
+  overflow: hidden;
+  transition:
+    block-size 0.35s var(--ease),
+    opacity 0.3s var(--ease);
+
+  @starting-style {
+    block-size: 0;
+    opacity: 0;
+  }
+}
+
+.rdx-pipe-drawer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+}
+
+.rdx-pipe-drawer-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.rdx-pipe-drawer-spec {
+  font-size: 0.75rem;
+  color: var(--soft);
+}
+
+.rdx-pipe-drawer-summary {
+  font-size: 0.9375rem;
+  color: var(--soft);
+  line-height: 1.75;
+}
+
+.rdx-pipe-probe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 14px;
+}
+
+.rdx-pipe-probe-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition:
+    border-color 0.25s var(--ease),
+    color 0.25s var(--ease);
+}
+
+.rdx-pipe-probe-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rdx-pipe-probe-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.rdx-pipe-probe-result {
+  font-size: 0.75rem;
+  color: var(--live);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rdx-pipe-drawer {
+    transition: none !important;
   }
 }
 

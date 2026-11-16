@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import type { CaseItem } from "@/lib/cases";
 import { countFrame } from "@/lib/count-up";
 import { capabilities, homelabLayers, pipelineSteps } from "@/lib/engineering";
+import { pad2 } from "@/lib/format";
 import type { ResearchTopic } from "@/lib/research";
 
 /**
@@ -63,22 +64,100 @@ export function CaseRows({ items }: { items: CaseItem[] }) {
   );
 }
 
+type HealthProbe =
+  | { state: "idle" }
+  | { state: "loading" }
+  | { state: "ok"; status: number; body: string; ms: number }
+  | { state: "error"; message: string };
+
 /** このサイトの配信経路。`anchor` を付けると `#pipeline` の行き先になる */
 export function Pipeline({ anchor = false }: { anchor?: boolean }) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [probe, setProbe] = useState<HealthProbe>({ state: "idle" });
+  const panelId = useId();
+  const activeStep = activeIndex !== null ? pipelineSteps[activeIndex] : null;
+
+  const runHealthProbe = useCallback(async () => {
+    setProbe({ state: "loading" });
+    const start = performance.now();
+    try {
+      const res = await fetch("/healthz", {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      const text = await res.text();
+      const ms = Math.max(1, Math.round(performance.now() - start));
+      if (!res.ok) {
+        setProbe({ state: "error", message: `HTTP ${res.status}` });
+        return;
+      }
+      setProbe({ state: "ok", status: res.status, body: text, ms });
+    } catch {
+      setProbe({ state: "error", message: "接続に失敗しました" });
+    }
+  }, []);
+
+  const selectStep = (index: number) => {
+    const next = activeIndex === index ? null : index;
+    setActiveIndex(next);
+    if (next !== null && pipelineSteps[next]?.isHealthcheck) {
+      void runHealthProbe();
+    }
+  };
+
   return (
     <div id={anchor ? "pipeline" : undefined} className="rdx-pipe" data-rv>
-      <p className="rdx-pipe-title rdx-mono">
+      <div className="rdx-pipe-title rdx-mono">
         <span>このサイトの配信経路</span>
-      </p>
+        <span className="rdx-pipe-hint">ノードを選択して詳細を確認</span>
+      </div>
       <ol className="rdx-pipe-steps">
-        {pipelineSteps.map((step, i) => (
-          <li key={step.label} className="rdx-pipe-step" style={{ "--i": i } as React.CSSProperties}>
-            <span className="rdx-pipe-node" aria-hidden="true" />
-            <span className="rdx-pipe-name rdx-mono">{step.label}</span>
-            <span className="rdx-pipe-detail rdx-mono"> {step.detail}</span>
-          </li>
-        ))}
+        {pipelineSteps.map((step, i) => {
+          const isSelected = activeIndex === i;
+          return (
+            <li key={step.label} className="rdx-pipe-step" style={{ "--i": i } as React.CSSProperties}>
+              <button
+                type="button"
+                className="rdx-pipe-btn"
+                aria-expanded={isSelected}
+                aria-controls={isSelected ? panelId : undefined}
+                onClick={() => selectStep(i)}
+              >
+                <span className="rdx-pipe-node" aria-hidden="true" />
+                <span className="rdx-pipe-name rdx-mono">{step.label}</span>
+                <span className="rdx-pipe-detail rdx-mono"> {step.detail}</span>
+              </button>
+            </li>
+          );
+        })}
       </ol>
+      {activeStep && (
+        <div id={panelId} className="rdx-pipe-drawer" role="region" aria-label={`${activeStep.label} の詳細`}>
+          <div className="rdx-pipe-drawer-head">
+            <span className="rdx-pipe-drawer-label rdx-mono">
+              {pad2((activeIndex ?? 0) + 1)} · {activeStep.label}
+            </span>
+            <code className="rdx-pipe-drawer-spec rdx-mono">{activeStep.spec}</code>
+          </div>
+          <p className="rdx-pipe-drawer-summary">{activeStep.summary}</p>
+          {activeStep.isHealthcheck && (
+            <div className="rdx-pipe-probe">
+              <button
+                type="button"
+                className="rdx-pipe-probe-btn rdx-mono"
+                onClick={() => void runHealthProbe()}
+                disabled={probe.state === "loading"}
+              >
+                {probe.state === "loading" ? "計測中..." : "/healthz を再計測"}
+              </button>
+              <span className="rdx-pipe-probe-result rdx-mono" aria-live="polite">
+                {probe.state === "ok" && `HTTP ${probe.status} · ${probe.body} · ${probe.ms}ms`}
+                {probe.state === "error" && probe.message}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -97,11 +97,47 @@ export const homelabLayers = [
 
 /** このサイトのデプロイ経路。.github/workflows/deploy.yml と一致させる */
 export const pipelineSteps = [
-  { label: "git push", detail: "main" },
-  { label: "GitHub Actions", detail: "typecheck · lint · test · audit" },
-  { label: "Docker build", detail: "multi-stage" },
-  { label: "GHCR", detail: "image registry" },
-  { label: "self-hosted runner", detail: "自宅 Proxmox" },
-  { label: "Docker Compose", detail: "pull · up -d" },
-  { label: "/healthz", detail: "healthcheck" },
+  {
+    label: "git push",
+    detail: "main",
+    summary: "docs/** と *.md 以外の変更を main ブランチへ push すると、Build and Deploy ワークフローが起動します。",
+    spec: "branches: [main] / concurrency: cancel-in-progress",
+  },
+  {
+    label: "GitHub Actions",
+    detail: "typecheck · lint · test · audit",
+    summary: "ubuntu-latest 上の Bun 1.3.13 で lint・型チェック・Vitest を実行し、lockfile 変更時は bun audit で依存を検査します。",
+    spec: "bun run lint && bun run typecheck && bun run test --run",
+  },
+  {
+    label: "Docker build",
+    detail: "multi-stage",
+    summary: "Docker Buildx と GitHub Actions キャッシュを使い、Node.js 22 ベースの本番用マルチステージイメージをビルドします。",
+    spec: "docker/build-push-action@v6 (cache-from: type=gha)",
+  },
+  {
+    label: "GHCR",
+    detail: "image registry",
+    summary: "ビルド済みイメージにコミット SHA と latest のタグを付けて GitHub Container Registry へプッシュします。",
+    spec: "ghcr.io/koshikai/koshikai-app",
+  },
+  {
+    label: "self-hosted runner",
+    detail: "自宅 Proxmox",
+    summary: "自宅 Proxmox 上で稼働する self-hosted runner がデプロイジョブを受け取り、compose 定義と環境変数を同期します。",
+    spec: "runs-on: self-hosted -> ~/deploy/koshikai",
+  },
+  {
+    label: "Docker Compose",
+    detail: "pull · up -d",
+    summary: "最新イメージを pull し、docker compose up -d --remove-orphans でコンテナを入れ替えます。24 時間超の古いイメージも自動整理します。",
+    spec: "docker compose -p koshikai_public pull && up -d",
+  },
+  {
+    label: "/healthz",
+    detail: "healthcheck",
+    summary: "稼働中の SSR サーバーが GET /healthz に対して JSON（{\"ok\":true}）を返し、疎通できる状態を保ちます。",
+    spec: "GET /healthz -> 200 OK",
+    isHealthcheck: true,
+  },
 ];
