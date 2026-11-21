@@ -41,6 +41,33 @@ AI コーチ機能は OpenRouter API を介し、ユーザーの直近の記録�
 
 圏外や機内モードでも記録が途切れないよう、オフライン時は 3D の引き抜き演出に入る前にまず IndexedDB のキューへ保存し、通信復帰時に自動で同期する構成にしました。各操作にはクライアント側で `operation_id` を振り、サーバー側の `ProcessedLogOperation` テーブルで処理済みを管理することで、再送による二重登録を防いでいます。
 
+<svg viewBox="0 0 360 226" role="img" aria-label="3D の箱で記録するとオフライン時は IndexedDB キューに保存され、operation_id 付きで PostgreSQL に冪等同期し、直近集計を AI コーチへ渡す流れ" className="my-8 block w-full text-foreground">
+  <defs>
+    <marker id="smoke-flow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="currentColor" fillOpacity="0.6" />
+    </marker>
+  </defs>
+  <g fill="none" stroke="currentColor" strokeOpacity="0.5">
+    <rect x="0.5" y="0.5" width="359" height="44" />
+    <rect x="0.5" y="60.5" width="359" height="44" />
+    <rect x="0.5" y="120.5" width="359" height="44" />
+    <rect x="0.5" y="180.5" width="359" height="44" />
+    <path d="M180 44 V60" markerEnd="url(#smoke-flow)" />
+    <path d="M180 104 V120" markerEnd="url(#smoke-flow)" />
+    <path d="M180 164 V180" markerEnd="url(#smoke-flow)" />
+  </g>
+  <g fill="currentColor" fontSize="11" fontFamily="ui-monospace, monospace" textAnchor="middle">
+    <text x="180" y="21">3D の箱から 1 本を記録</text>
+    <text x="180" y="35" fontSize="9.5" fillOpacity="0.72">演出の前にローカルへ保存（着火・灰皿アニメーション）</text>
+    <text x="180" y="81">IndexedDB キュー（operation_id 付き）</text>
+    <text x="180" y="95" fontSize="9.5" fillOpacity="0.72">圏外でも保存し、復帰時に自動リトライ</text>
+    <text x="180" y="141">PostgreSQL + ProcessedLogOperation</text>
+    <text x="180" y="155" fontSize="9.5" fillOpacity="0.72">重複登録を防止し、箱スロット・支出・写真を永続化</text>
+    <text x="180" y="201">AI コーチ（OpenRouter SSE）</text>
+    <text x="180" y="215" fontSize="9.5" fillOpacity="0.72">直近 4 週間・開封中の箱・支出を要約注入 / 候補フォールバック</text>
+  </g>
+</svg>
+
 カスタム Service Worker では `/api/uploads/` の記録写真を Cache First でキャッシュし、ログアウト時にはキャッシュを破棄します。あわせて Web Push の受信と通知タップ時の遷移もここで処理しています。
 
 ### カレンダー・傾向分析・落款印の実績
@@ -63,7 +90,7 @@ Prisma スキーマでは、`UserSettings`、`Brand`、`Pack`、`Log`、`Process
 
 `Log` には時系列集計のための `(userId, created_at)` インデックスに加え、箱内のスロット重複を防ぐ `(packId, slot_index)` の一意制約と、画像配信時の所有権確認を高速化する `(userId, image_url)` インデックスを設定しています。
 
-ユーザー向けの更新内容は単一のリスト（`src/lib/changelog.ts`）で管理し、公開の更新履歴ページ（`/changes`）、設定画面のお知らせ、ホーム画面の未読チップをすべて同じデータから生成しています。
+ユーザー向けの更新内容は単一のリスト（`src/lib/changelog.ts`）で管理し、[公開の更新履歴ページ（`/changes`）](https://smoke-it.koshikai.dev/changes)、設定画面のお知らせ、ホーム画面の未読チップをすべて同じデータから生成しています。
 
 ## 開発・運用を通じて得た知見
 

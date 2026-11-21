@@ -67,7 +67,12 @@ describe("content data", () => {
       expect(sitemap, path || "/").toContain(`<loc>https://koshikai.dev${path}</loc>`);
     }
     for (const item of caseItems) {
-      expect(sitemap, item.slug).toContain(`<loc>https://koshikai.dev/cases/${item.slug}</loc>`);
+      const loc = `<loc>https://koshikai.dev/cases/${item.slug}</loc>`;
+      expect(sitemap, item.slug).toContain(loc);
+      const pattern = new RegExp(
+        `<loc>https://koshikai\\.dev/cases/${item.slug}</loc>\\s*<lastmod>${item.publishedAt}</lastmod>`,
+      );
+      expect(sitemap, `${item.slug} lastmod`).toMatch(pattern);
     }
   });
 });

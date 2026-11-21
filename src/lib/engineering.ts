@@ -29,7 +29,7 @@ const MATHKB: Evidence = { label: "MathKB", href: "/cases/mathkb" };
 export const capabilities: Capability[] = [
   {
     area: "Frontend",
-    tools: ["TypeScript", "React", "TanStack Start", "PWA"],
+    tools: ["TypeScript", "React", "TanStack Start", "Three.js", "PWA"],
     evidence: [SMOKE_IT, KARIGALLERY, THIS_SITE],
   },
   {

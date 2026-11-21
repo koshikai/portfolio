@@ -55,7 +55,7 @@ export const caseItems: CaseItem[] = [
     title: "KariGallery: 決済フローまで実装したイラストギャラリー",
     summary:
       "友人のイラストを管理・公開するギャラリー。Stripe による決済フローまで実装・検証したうえで、法的手続きの負荷を踏まえて本番決済は行わない判断をした。",
-    tags: ["Auth.js", "Stripe", "Prisma v7.7", "Image Processing"],
+    tags: ["Auth.js", "Stripe", "Prisma", "Image Processing"],
     publishedAt: "2026-04-21",
     challenge:
       "友人のイラストを一箇所でまとめて展示したい。あわせて将来の通販を見据えた決済技術の検証も行いたい。",
