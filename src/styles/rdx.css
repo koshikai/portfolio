@@ -150,7 +150,11 @@
   margin-block: -0.1em;
   padding-block: 0.1em;
 }
-.rdx-chars span {
+.rdx-chars-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+}
+.rdx-chars .rdx-char {
   display: inline-block;
   animation: rdx-char 0.9s var(--ease) both;
   animation-delay: calc(var(--i) * 45ms + 80ms);
@@ -1591,15 +1595,24 @@ a.rdx-work-media:hover img {
 .rdx-contact {
   padding-block: clamp(96px, 14vw, 192px) clamp(64px, 8vw, 96px);
 }
+.rdx [data-rv]:has(> .rdx-mail) {
+  container-type: inline-size;
+}
 .rdx-mail {
   display: inline-block;
+  max-width: 100%;
   margin-top: 16px;
-  font-size: clamp(1.5rem, 7vw, 6.5rem);
+  font-size: clamp(2rem, 0.5rem + 6.5vw, 5rem);
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.15;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   transition: color 0.3s var(--ease);
+}
+@supports (font-size: 1cqi) {
+  .rdx-mail {
+    font-size: clamp(2rem, 0.5rem + 6.5cqi, 5rem);
+  }
 }
 .rdx-mail:hover {
   color: var(--accent);
@@ -1725,7 +1738,7 @@ a.rdx-work-media:hover img {
   [data-rv="stagger"] > :nth-child(12) { --sd: 770ms; }
 
   /* 画面に入るまで待つもの（連絡先の文字、配信経路の線とノード） */
-  .js .rdx [data-rv]:not(.is-in) .rdx-chars span,
+  .js .rdx [data-rv]:not(.is-in) .rdx-chars .rdx-char,
   .js .rdx [data-rv]:not(.is-in) .rdx-pipe-steps::after,
   .js .rdx [data-rv]:not(.is-in) .rdx-pipe-node::after {
     animation-play-state: paused;
@@ -1734,7 +1747,7 @@ a.rdx-work-media:hover img {
 
 @media (prefers-reduced-motion: reduce) {
   .rdx [data-rv],
-  .rdx-chars span,
+  .rdx-chars .rdx-char,
   .rdx-caret,
   .rdx-hero-sub,
   .rdx-hero-art {

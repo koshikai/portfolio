@@ -337,11 +337,21 @@ export function ResearchPapers({
 
 /** 1 文字ずつ下からせり上がる。読み上げには親の aria-label を使う */
 export function Chars({ text }: { text: string }) {
+  const groups = text.split(/(?=@)/);
+  let index = 0;
+
   return (
     <span className="rdx-chars" aria-hidden="true">
-      {Array.from(text).map((char, i) => (
-        <span key={i} style={{ "--i": i } as React.CSSProperties}>
-          {char}
+      {groups.map((group, groupIndex) => (
+        <span key={groupIndex} className="rdx-chars-group">
+          {Array.from(group).map((char) => {
+            const current = index++;
+            return (
+              <span key={current} className="rdx-char" style={{ "--i": current } as React.CSSProperties}>
+                {char}
+              </span>
+            );
+          })}
         </span>
       ))}
     </span>
