@@ -1,96 +1,41 @@
-# 越 海斗 (KOSHI Kaito)
-
-こんにちは 👋 ウェブアプリと深層学習が好きな大学生です。  
-ポートフォリオ: **[koshikai.dev](https://koshikai.dev)**
-
-自宅サーバー（Proxmox）の運用を楽しみながら、生活や運用の課題を発見して実装し、改善するのが好きです。
-
-## 🚀 作っているもの
-
-| プロジェクト | 説明 | 状態 |
-|---|---|---|
-| [koshikai.dev](https://koshikai.dev) | ポートフォリオサイト（このリポジトリ） | 公開中 |
-| [Smoke it.](https://smoke-it.koshikai.dev) | 喫煙記録 PWA。AI コーチ・週間レポート・バッジ・Web Push 付き | 公開中 |
-| [KariGallery](https://gallery.koshikai.dev) | アート作品の管理・閲覧アプリ（決済機能を無効化したデモとして公開） | デモ公開 |
-| **ひだまりマップ**（sunny-room） | PLATEAU 3D 都市モデルを使った日照シミュレーション Web アプリ | 🔒 非公開 |
-| [TurboCircuit](https://github.com/koshikai/TurboCircuit) | Unity 製の 3D カートレーシングゲーム（6 コース・アイテム・2P 対戦・オンライン対戦）。Windows 64-bit 版を [GitHub Releases](https://github.com/koshikai/TurboCircuit/releases/latest) で配布 | 公開 |
-| [bn-edge-removal-public](https://github.com/koshikai/bn-edge-removal-public) | ブーリアンネットワークのエッジ除去制御（強化学習）の研究コード | 公開 |
-
-## 🛠️ スキル
-
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-f9f9f9?style=flat-square&logo=bun&logoColor=black)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Proxmox](https://img.shields.io/badge/Proxmox-E57000?style=flat-square&logo=proxmox&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-
-## 🔬 研究
-
-深層学習の構造学習・モデル解釈を研究中。研究関連のリポジトリは [research-template](https://github.com/koshikai/research-template) からたどれます。
-
-## 📫 連絡先
-
-- ポートフォリオ: <https://koshikai.dev>
-- GitHub: [@koshikai](https://github.com/koshikai)
-
----
-
-<!-- 以下はこのリポジトリのドキュメント -->
-
 # koshikai.dev
 
-Next.js で構築した公開ポートフォリオサイトです。
-
-## 構成
-
-- `src/app/`: App Router ページ、メタデータ、ヘルスチェック
-- `src/components/`: ポートフォリオ UI
-- `src/content/cases/`: MDX ケーススタディ
-- `src/lib/`: 表示データ（`profile.ts` / `works.ts` / `engineering.ts` / `research.ts` / `cases.ts`）、サイト設定、ベンチマークデータ
-- `src/test/setup.ts`: Vitest の共通セットアップ
-- `docs/`: 詳細ドキュメント
-- `scripts/`: サーバー準備スクリプト
-- `public/images/`: 図版とスクリーンショット
-- `docker-compose.prod.yaml`: 本番デプロイ構成
-
-主な route は `/`、`/works`、`/engineering`、`/research`、`/about`、`/cases`、`/cases/[slug]`、`/llm-benchmarks`、`/healthz` です。詳細は [`docs/architecture.md`](./docs/architecture.md) を参照してください。
+作品、個人開発の運用、研究を紹介するポートフォリオです。TanStack Start、TypeScript、Tailwind CSS v4 で構築しています。公開サイトは [koshikai.dev](https://koshikai.dev) です。
 
 ## ローカル開発
 
-前提: Bun 1.0 以上。
+Bun 1.0 以上が必要です。ローカルでの起動とビルドにデータベース接続は不要です。
 
 ```bash
 bun install
-cp .env.example .env.local
 bun run dev
 ```
 
-ポートフォリオはデータベース接続なしで起動・ビルドできます。`SITE_URL` を省略した場合、canonical URL には `https://koshikai.dev` が使われます。
-
 ## 環境変数
 
-| 変数 | 必須 | 既定値 | 用途 |
-|---|---:|---|---|
-| `SITE_URL` | いいえ | `https://koshikai.dev` | metadata、canonical、sitemap のベース URL |
+メタデータ、canonical URL、サイトマップのベース URL は `SITE_URL` で指定できます。既定値は `https://koshikai.dev` です。ローカルの URL を指定する場合は、[`.env.example`](./.env.example) を `.env.local` にコピーして編集してください。
 
-## デプロイ
+## リポジトリ構成
 
-`main` への push で GitHub Actions が lint、test、Docker image build、GHCR への push、Proxmox 上の self-hosted runner でのデプロイを実行します。Markdown と `docs/**` だけの変更では workflow は起動しません。
+- `src/routes/` に TanStack Router のルートを置いています。ケーススタディの個別ページは `src/routes/cases/$slug.tsx` です。
+- `src/components/` にサイトの共通コンポーネント、`src/lib/` に作品や研究などの表示データを置いています。
+- `src/content/cases/` に MDX のケーススタディ本文、`public/images/` に図版とスクリーンショットを置いています。
+- `server.mjs` が本番環境でサイトを配信します。ヘルスチェックは `/healthz` です。
 
-詳細は [`docs/deployment.md`](./docs/deployment.md)、全体構成は [`docs/architecture.md`](./docs/architecture.md) を参照してください。
+全体構成は [`docs/architecture.md`](./docs/architecture.md) を参照してください。
 
 ## 検証
 
 ```bash
 bun run lint
+bun run typecheck
 bun run test -- --run
 bun run build
 bun audit
 ```
+
+## デプロイ
+
+`main` への push で GitHub Actions が検証を行い、Docker イメージを GitHub Container Registry（GHCR）に push します。その後、Proxmox 上の self-hosted runner が Docker Compose でサイトを更新します。Markdown と `docs/` 配下だけの変更ではデプロイは起動しません。
+
+デプロイ構成とトラブルシューティングは [`docs/deployment.md`](./docs/deployment.md) を参照してください。

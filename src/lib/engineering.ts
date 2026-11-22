@@ -119,7 +119,7 @@ export const pipelineSteps = [
     label: "GHCR",
     detail: "image registry",
     summary: "ビルド済みイメージにコミット SHA と latest のタグを付けて GitHub Container Registry へプッシュします。",
-    spec: "ghcr.io/koshikai/koshikai-app",
+    spec: "ghcr.io/koshikai/portfolio-app",
   },
   {
     label: "self-hosted runner",

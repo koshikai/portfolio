@@ -14,16 +14,16 @@
 
 #### Lint and Test Job（`ubuntu-latest`）
 
-1. `bun run typecheck`（TypeScript 型チェック）
-2. `bun run lint`（ESLint）
-3. `bun run test -- --run`（Vitest）
-4. `bun audit --audit-level=high`（脆弱性監査）
+1. `bun run lint`（ESLint）
+2. `bun run typecheck`（TypeScript 型チェック）
+3. `bun run test --run`（Vitest）
+4. `bun audit`（依存関係の変更時または手動実行時）
 
 #### Build Job（`ubuntu-latest`）
 
 1. アプリ用 Docker イメージのビルド・プッシュ
-   - `ghcr.io/koshikai/koshikai-app:latest`
-   - `ghcr.io/koshikai/koshikai-app:sha-{commit}`
+   - `ghcr.io/koshikai/portfolio-app:latest`
+   - `ghcr.io/koshikai/portfolio-app:<短縮コミットSHA>`
 
 #### Deploy Job（`self-hosted` on Proxmox）
 
@@ -45,7 +45,7 @@
 |------|-----|
 | サービス名 | `app` |
 | コンテナ名 | `koshikai-app` |
-| イメージ | `ghcr.io/koshikai/koshikai-app:latest` |
+| イメージ | `ghcr.io/koshikai/portfolio-app:latest` |
 | ポート | `3002:3000` |
 | 環境変数 | `.env.prod` |
 | 固定環境変数 | `NODE_ENV=production`, `SITE_URL=https://koshikai.dev` |

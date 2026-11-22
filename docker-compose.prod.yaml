@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/koshikai/koshikai-app:latest
+    image: ghcr.io/koshikai/portfolio-app:latest
     container_name: koshikai-app
     restart: always
     ports:
