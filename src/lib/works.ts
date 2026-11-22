@@ -65,8 +65,9 @@ export const works: Work[] = [
     links: { live: "https://smoke-it.koshikai.dev", caseSlug: "smoke-it" },
     image: {
       alt: "Smoke it. のランディングページ",
-      desktop: { src: "/images/projects/smoke-it-desktop.webp", width: 1424, height: 900 },
-      mobile: { src: "/images/projects/smoke-it-mobile.webp", width: 780, height: 1688 },
+      // 画像を差し替えたら v を更新する（Cloudflare が 4 時間キャッシュするため）
+      desktop: { src: "/images/projects/smoke-it-desktop.webp?v=20261122", width: 1424, height: 900 },
+      mobile: { src: "/images/projects/smoke-it-mobile.webp?v=20261122", width: 780, height: 1688 },
     },
     featured: true,
   },
