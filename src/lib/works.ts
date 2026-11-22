@@ -45,6 +45,11 @@ export interface Work {
     desktop: { src: string; width: number; height: number };
     /** 縦長。実機の画面比に合わせる */
     mobile: { src: string; width: number; height: number };
+    /** サイトをダークにしたときに差し替える画像（任意） */
+    dark?: {
+      desktop: { src: string; width: number; height: number };
+      mobile: { src: string; width: number; height: number };
+    };
   };
   architecture?: string[];
   featured: boolean;
@@ -64,10 +69,14 @@ export const works: Work[] = [
     stack: ["TanStack Start", "Three.js", "PWA", "PostgreSQL / Prisma", "OpenRouter", "MCP"],
     links: { live: "https://smoke-it.koshikai.dev", caseSlug: "smoke-it" },
     image: {
-      alt: "Smoke it. のランディングページ",
-      // 画像を差し替えたら v を更新する（Cloudflare が 4 時間キャッシュするため）
-      desktop: { src: "/images/projects/smoke-it-desktop.webp?v=20261122", width: 1424, height: 900 },
-      mobile: { src: "/images/projects/smoke-it-mobile.webp?v=20261122", width: 780, height: 1688 },
+      alt: "Smoke it. のホーム画面。今日の本数と支出、机の上の 3D の箱・写真立て・灰皿",
+      // 同じファイル名で画像を差し替えたら v を更新する（Cloudflare が 4 時間キャッシュするため）
+      desktop: { src: "/images/projects/smoke-it-light-desktop.webp", width: 1424, height: 900 },
+      mobile: { src: "/images/projects/smoke-it-light-mobile.webp", width: 780, height: 1520 },
+      dark: {
+        desktop: { src: "/images/projects/smoke-it-dark-desktop.webp", width: 1424, height: 900 },
+        mobile: { src: "/images/projects/smoke-it-dark-mobile.webp", width: 780, height: 1520 },
+      },
     },
     featured: true,
   },

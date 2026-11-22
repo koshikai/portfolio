@@ -3,6 +3,34 @@ import { ArrowUpRight } from "lucide-react";
 import { STATUS_LABELS, type Work } from "@/lib/works";
 import { pad2 } from "@/lib/format";
 
+type ImageSet = Pick<NonNullable<Work["image"]>, "desktop" | "mobile">;
+
+/**
+ * 広い画面では横長、狭い画面では縦長の画像を出す。
+ * ライト用・ダーク用を両方置き、表示しない方は CSS で display: none にする（lazy なので読み込まれない）。
+ * サイトのダークはトグルで選ぶ方式で OS 設定に従わないため、prefers-color-scheme の source は使わない。
+ */
+function WorkPicture({ set, alt, className }: { set: ImageSet; alt: string; className?: string }) {
+  return (
+    <picture className={className}>
+      <source
+        media="(min-width: 40rem)"
+        srcSet={set.desktop.src}
+        width={set.desktop.width}
+        height={set.desktop.height}
+      />
+      <img
+        src={set.mobile.src}
+        width={set.mobile.width}
+        height={set.mobile.height}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+      />
+    </picture>
+  );
+}
+
 /**
  * 作品 1 件。トップと /works の両方で使う（見た目は `styles/rdx.css` の `.rdx-work`）。
  *
@@ -32,22 +60,16 @@ export function WorkItem({
 }) {
   const external = work.links.live ?? work.links.download;
   const image = work.image && (
-    <picture>
-      <source
-        media="(min-width: 40rem)"
-        srcSet={work.image.desktop.src}
-        width={work.image.desktop.width}
-        height={work.image.desktop.height}
-      />
-      <img
-        src={work.image.mobile.src}
-        width={work.image.mobile.width}
-        height={work.image.mobile.height}
+    <>
+      <WorkPicture
+        set={work.image}
         alt={work.image.alt}
-        loading="lazy"
-        decoding="async"
+        className={work.image.dark ? "rdx-theme-light" : undefined}
       />
-    </picture>
+      {work.image.dark && (
+        <WorkPicture set={work.image.dark} alt={work.image.alt} className="rdx-theme-dark" />
+      )}
+    </>
   );
   const className = ["rdx-work", compact && "rdx-work--compact", flip && "rdx-work--flip"]
     .filter(Boolean)

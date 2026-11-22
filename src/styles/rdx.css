@@ -523,6 +523,14 @@
 a.rdx-work-media:hover img {
   scale: 1.03;
 }
+/* ライト用・ダーク用の画像がある作品は、サイトのテーマに合う方だけ出す */
+.rdx-work-media .rdx-theme-dark,
+.dark .rdx-work-media .rdx-theme-light {
+  display: none;
+}
+.dark .rdx-work-media .rdx-theme-dark {
+  display: inline;
+}
 .rdx-work-meta {
   display: flex;
   flex-wrap: wrap;
