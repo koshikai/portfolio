@@ -1,7 +1,7 @@
 services:
   app:
     image: ghcr.io/koshikai/portfolio-app:latest
-    container_name: koshikai-app
+    container_name: portfolio-app
     restart: always
     ports:
       - "3002:3000"

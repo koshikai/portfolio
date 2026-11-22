@@ -28,11 +28,11 @@
 #### Deploy Job（`self-hosted` on Proxmox）
 
 1. デプロイメントマニフェストの同期
-   - `$HOME/deploy/koshikai` に compose ファイルをコピー
-   - `/opt/home/.env.prod` → `$HOME/deploy/koshikai/.env.prod`（symlink）
+   - `$HOME/deploy/portfolio` に compose ファイルをコピー
+   - `/opt/home/.env.prod` → `$HOME/deploy/portfolio/.env.prod`（symlink）
 2. 公開ポートフォリオの再起動
-   - `docker compose -p koshikai_public -f docker-compose.prod.yaml pull`
-   - `docker compose -p koshikai_public -f docker-compose.prod.yaml up -d --remove-orphans`
+   - `docker compose -p portfolio -f docker-compose.prod.yaml pull`
+   - `docker compose -p portfolio -f docker-compose.prod.yaml up -d --remove-orphans`
 3. 古いイメージのクリーンアップ（24時間以上前）
 
 同一ブランチの古い実行は concurrency 設定により cancel されます。
@@ -44,7 +44,7 @@
 | 項目 | 値 |
 |------|-----|
 | サービス名 | `app` |
-| コンテナ名 | `koshikai-app` |
+| コンテナ名 | `portfolio-app` |
 | イメージ | `ghcr.io/koshikai/portfolio-app:latest` |
 | ポート | `3002:3000` |
 | 環境変数 | `.env.prod` |
@@ -83,7 +83,7 @@ env ファイルは手動で配置する必要があります。
 
 ## 監視
 
-- `GET /healthz` on `koshikai-app`
+- `GET /healthz` on `portfolio-app`
 - Docker healthcheck でコンテナの状態（healthy / unhealthy）を確認する。unhealthy になっても自動では再起動されない（`restart: always` が効くのはプロセスが終了したときだけ）
 
 ## トラブルシューティング
@@ -98,4 +98,4 @@ Missing .env.prod. Place it in /opt/home/.env.prod or $DEPLOY_DIR/.env.prod befo
 
 ### レガシーコンテナの移行
 
-workflow 内で古いプロジェクト名のコンテナを検出・削除するロジックがあります。`koshikai-app` などのコンテナ名が競合する場合は自動的にクリーンアップされます。
+workflow 内で古いプロジェクト名のコンテナを検出・削除するロジックがあります。`koshikai-app` や別プロジェクトの `portfolio-app` などコンテナ名が競合する場合は自動的にクリーンアップされます。

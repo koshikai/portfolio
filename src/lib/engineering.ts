@@ -125,13 +125,13 @@ export const pipelineSteps = [
     label: "self-hosted runner",
     detail: "自宅 Proxmox",
     summary: "自宅 Proxmox 上で稼働する self-hosted runner がデプロイジョブを受け取り、compose 定義と環境変数を同期します。",
-    spec: "runs-on: self-hosted -> ~/deploy/koshikai",
+    spec: "runs-on: self-hosted -> ~/deploy/portfolio",
   },
   {
     label: "Docker Compose",
     detail: "pull · up -d",
     summary: "最新イメージを pull し、docker compose up -d --remove-orphans でコンテナを入れ替えます。24 時間超の古いイメージも自動整理します。",
-    spec: "docker compose -p koshikai_public pull && up -d",
+    spec: "docker compose -p portfolio pull && up -d",
   },
   {
     label: "/healthz",

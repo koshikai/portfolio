@@ -5,7 +5,7 @@
 
 set -e
 
-echo "Setting up directories for koshikai deployment..."
+echo "Setting up directories for portfolio deployment..."
 
 # 1. Prepare Deployment Directory
 echo "Creating /opt/home..."
@@ -26,5 +26,5 @@ echo "Instructions:"
 echo "1. Install the GitHub Actions Runner in /opt/actions-runner-home"
 echo "   (Check your GitHub Repo Settings > Actions > Runners for the exact commands)"
 echo "2. Place your .env.prod in /opt/home for the public portfolio"
-echo "3. Compose files are synced automatically into the runner user's \$HOME/deploy/koshikai"
+echo "3. Compose files are synced automatically into the runner user's \$HOME/deploy/portfolio"
 echo "---------------------------------------------------"

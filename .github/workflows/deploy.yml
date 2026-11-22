@@ -141,7 +141,7 @@ jobs:
 
       - name: Sync deployment manifests
         run: |
-          DEPLOY_DIR="${HOME}/deploy/koshikai"
+          DEPLOY_DIR="${HOME}/deploy/portfolio"
           mkdir -p "$DEPLOY_DIR"
           cp docker-compose.prod.yaml "$DEPLOY_DIR/docker-compose.prod.yaml"
 
@@ -158,15 +158,19 @@ jobs:
             echo "Missing .env.prod. Place it in /opt/home/.env.prod or $DEPLOY_DIR/.env.prod before deploying."
             exit 1
           fi
-          PROJECT_NAME="koshikai_public"
+          PROJECT_NAME="portfolio"
+          docker compose -p "$PROJECT_NAME" -f docker-compose.prod.yaml pull
           if docker inspect koshikai-app >/dev/null 2>&1; then
-            CURRENT_PROJECT="$(docker inspect -f '{{ index .Config.Labels "com.docker.compose.project" }}' koshikai-app 2>/dev/null || true)"
+            echo "Removing legacy koshikai-app container."
+            docker rm -f koshikai-app
+          fi
+          if docker inspect portfolio-app >/dev/null 2>&1; then
+            CURRENT_PROJECT="$(docker inspect -f '{{ index .Config.Labels "com.docker.compose.project" }}' portfolio-app 2>/dev/null || true)"
             if [ "$CURRENT_PROJECT" != "$PROJECT_NAME" ]; then
-              echo "Removing legacy koshikai-app container from compose project '$CURRENT_PROJECT'."
-              docker rm -f koshikai-app
+              echo "Removing legacy portfolio-app container from compose project '$CURRENT_PROJECT'."
+              docker rm -f portfolio-app
             fi
           fi
-          docker compose -p "$PROJECT_NAME" -f docker-compose.prod.yaml pull
           docker compose -p "$PROJECT_NAME" -f docker-compose.prod.yaml up -d --remove-orphans
 
       - name: Cleanup old images
