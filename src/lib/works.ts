@@ -71,10 +71,10 @@ export const works: Work[] = [
     image: {
       alt: "Smoke it. のホーム画面。今日の本数と支出、机の上の 3D の箱・写真立て・灰皿",
       // 同じファイル名で画像を差し替えたら v を更新する（Cloudflare が 4 時間キャッシュするため）
-      desktop: { src: "/images/projects/smoke-it-light-desktop.webp?v=2", width: 1424, height: 900 },
+      desktop: { src: "/images/projects/smoke-it-light-desktop.webp?v=3", width: 1424, height: 900 },
       mobile: { src: "/images/projects/smoke-it-light-mobile.webp", width: 780, height: 1520 },
       dark: {
-        desktop: { src: "/images/projects/smoke-it-dark-desktop.webp?v=2", width: 1424, height: 900 },
+        desktop: { src: "/images/projects/smoke-it-dark-desktop.webp?v=3", width: 1424, height: 900 },
         mobile: { src: "/images/projects/smoke-it-dark-mobile.webp", width: 780, height: 1520 },
       },
     },
