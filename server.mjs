@@ -162,7 +162,7 @@ const MARKDOWN_PAGES = {
       "",
       "企画・設計・実装・デプロイまで単独で手がけた個人開発作品の一覧です。",
       "",
-      "- **Smoke it.** (`https://smoke-it.koshikai.dev`): 喫煙習慣を記録し、改善を支援する AI コーチ付き PWA (TanStack Start, PWA, PostgreSQL / Prisma, OpenRouter)",
+      "- **Smoke it.** (`https://smoke-it.koshikai.dev`): 3D の箱から 1 本ずつ記録する、AI コーチ付き喫煙記録 PWA (TanStack Start, Three.js, PWA, PostgreSQL / Prisma, OpenRouter, MCP)",
       "- **KariGallery** (`https://gallery.koshikai.dev`): イラスト作品の展示・管理ギャラリー (TanStack Start, Auth.js, Stripe, Prisma)",
       "- **ひだまりマップ**: 部屋の窓に日が当たる時間帯を 3D 都市モデル上で確かめる Web アプリ (Next.js, CesiumJS, PLATEAU 3D Tiles, SunCalc)",
       "- **Turbo Circuit** (`https://github.com/koshikai/TurboCircuit`): ドリフトとアイテムで競う 3D カートレーシングゲーム (Unity, C#, URP, Unity Relay)",

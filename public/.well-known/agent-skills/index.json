@@ -13,7 +13,7 @@
       "type": "skill-md",
       "description": "Browse and read technical case studies across Build, Operate, and Research on koshikai.dev.",
       "url": "/.well-known/agent-skills/koshikai-cases/SKILL.md",
-      "digest": "sha256:ea1d86eb5dfb6d79160e2753eb5242dd986b816530efd18401f090187117e7b4"
+      "digest": "sha256:4ea51ec8df514a08c573aa6e1eaed11d07f635067356a11d87192b3cad9bd2bc"
     },
     {
       "name": "koshikai-auth",

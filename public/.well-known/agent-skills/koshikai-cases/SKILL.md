@@ -10,7 +10,7 @@ Use this skill to list and read the 11 in-depth technical case studies published
 ## Available Case Studies by Axis
 
 ### Build (`/works`)
-- `/cases/smoke-it` — Smoke it.: 喫煙習慣を記録し、改善を支援する AI コーチ付き PWA
+- `/cases/smoke-it` — Smoke it.: 3D の箱から 1 本ずつ記録する、AI コーチ付き喫煙記録 PWA
 - `/cases/karigallery` — KariGallery: 決済フローまで実装したイラストギャラリー
 
 ### Operate (`/engineering`)

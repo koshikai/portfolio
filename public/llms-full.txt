@@ -15,8 +15,8 @@
 ## 2. Works（個人開発プロダクト）
 
 1. **Smoke it.** (`https://smoke-it.koshikai.dev`)
-   - **概要**: 喫煙習慣を記録し、改善を支援する AI コーチ付き PWA（2025.12〜、公開中）
-   - **技術**: TanStack Start, PWA, PostgreSQL / Prisma, OpenRouter
+   - **概要**: 3D の箱から 1 本ずつ記録する、AI コーチ付きの喫煙記録 PWA。MCP サーバーから AI エージェントでも記録を扱える（2025.12〜、公開中）
+   - **技術**: TanStack Start, Three.js, PWA, PostgreSQL / Prisma, OpenRouter, MCP
    - **事例**: `https://koshikai.dev/cases/smoke-it`
 2. **KariGallery** (`https://gallery.koshikai.dev`)
    - **概要**: イラスト作品の展示・管理ギャラリー（2025.10〜、決済機能を無効化したデモとして公開）
@@ -58,7 +58,7 @@
 
 ## 5. ケーススタディ一覧 (`/cases`)
 
-- `/cases/smoke-it` — Smoke it.: 喫煙習慣を記録し、改善を支援する AI コーチ付き PWA
+- `/cases/smoke-it` — Smoke it.: 3D の箱から 1 本ずつ記録する、AI コーチ付き喫煙記録 PWA
 - `/cases/karigallery` — KariGallery: 決済フローまで実装したイラストギャラリー
 - `/cases/immich-distributed` — 分散インフラ基盤の構築と運用
 - `/cases/home-backup` — 自宅バックアップ基盤の構築

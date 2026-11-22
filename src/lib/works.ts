@@ -56,12 +56,12 @@ export const works: Work[] = [
     name: "Smoke it.",
     tagline: "3D の箱から 1 本ずつ記録する、AI コーチ付きの喫煙記録 PWA",
     summary:
-      "開けた箱を 3D で表示し、1 本取り出して着火から灰皿まで演出付きで記録する。箱棚や写真ギャラリー、時間帯・曜日別の傾向、支出を一覧でき、記録を踏まえて AI コーチに相談できる。",
+      "開けた箱を 3D で表示し、1 本取り出して着火から灰皿まで演出付きで記録する。箱棚や写真ギャラリー、期間別の傾向と支出を一覧でき、記録を踏まえて AI コーチに相談できる。OAuth 2.1 で認可する MCP サーバーから、AI エージェントでも記録を読み書きできる。",
     status: "live",
     since: "2025.12",
     scope: "企画・設計・実装・デプロイ（単独開発）",
     operation: "GitHub Actions でビルドし、自宅 Proxmox 上の Docker にデプロイ",
-    stack: ["TanStack Start", "Three.js", "PWA", "PostgreSQL / Prisma", "OpenRouter"],
+    stack: ["TanStack Start", "Three.js", "PWA", "PostgreSQL / Prisma", "OpenRouter", "MCP"],
     links: { live: "https://smoke-it.koshikai.dev", caseSlug: "smoke-it" },
     image: {
       alt: "Smoke it. のランディングページ",
