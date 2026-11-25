@@ -1,16 +1,16 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
-  heatStep,
+  collectNetworkEdges,
+  energyStep,
+  fieldForce,
   makeCamera,
   maskFromAlpha,
-  mixRgb,
   morphEnvelope,
   pairByColumns,
   ParticleType,
   projectPoint,
   scatterGlyph,
-  vortexAccel,
 } from "./ParticleType";
 
 /** 決まった列を返す乱数。テストの結果を実行ごとに揺らさない */
@@ -33,7 +33,6 @@ describe("maskFromAlpha", () => {
   it("塗り画素と、4 近傍に空きがある輪郭画素を拾う", () => {
     const mask = maskFromAlpha(rectAlpha(10, 10, 2, 2, 7, 7), 10, 10);
     expect(mask.ink.length).toBe(25);
-    // 5×5 の外周 16 画素が輪郭、内側 3×3 は輪郭ではない
     expect(mask.edge.reduce((a, b) => a + b, 0)).toBe(16);
   });
 });
@@ -61,7 +60,6 @@ describe("scatterGlyph", () => {
   it("輪郭の点は内側より密に並ぶ", () => {
     const { points, spacing } = scatterGlyph(mask, 800, seeded(5));
     const edgeCount = points.filter((p) => p.edge === 1).length;
-    // 外周の長さ / 内側の間隔 より多ければ、内側より詰まっている
     const perimeter = 2 * (160 + 80);
     expect(edgeCount).toBeGreaterThan(perimeter / spacing);
   });
@@ -90,7 +88,6 @@ describe("pairByColumns", () => {
     for (let i = 0; i < a.length; i++) {
       const from = a[i].x / 100;
       const to = (b[pairs[i]].x - 500) / 200;
-      // 帯の幅（約 1/8）＋境目の揺らぎまでは許す
       expect(Math.abs(from - to)).toBeLessThan(0.2);
       sum += Math.abs(from - to);
     }
@@ -111,7 +108,7 @@ describe("morphEnvelope", () => {
     }
   });
 
-  it("山は前半にある（素早くほどけて、ゆっくり組み上がる）", () => {
+  it("山は前半にある（素早くほどけて、精密に吸い付く）", () => {
     let peakU = 0;
     let peak = -1;
     for (let u = 0; u <= 1; u += 0.001) {
@@ -121,37 +118,45 @@ describe("morphEnvelope", () => {
         peakU = u;
       }
     }
-    expect(peakU).toBeGreaterThan(0.3);
-    expect(peakU).toBeLessThan(0.45);
+    expect(peakU).toBeGreaterThan(0.28);
+    expect(peakU).toBeLessThan(0.44);
     expect(peak).toBeCloseTo(1, 2);
   });
 });
 
-describe("heatStep", () => {
-  it("熱を 0..3 の段階へ単調に丸める", () => {
-    expect(heatStep(0)).toBe(0);
-    expect(heatStep(0.1)).toBe(0);
-    expect(heatStep(0.2)).toBe(1);
-    expect(heatStep(0.5)).toBe(2);
-    expect(heatStep(1)).toBe(3);
+describe("energyStep", () => {
+  it("励起度を 0..3 の段階へ単調に丸める", () => {
+    expect(energyStep(0)).toBe(0);
+    expect(energyStep(0.1)).toBe(0);
+    expect(energyStep(0.25)).toBe(1);
+    expect(energyStep(0.55)).toBe(2);
+    expect(energyStep(1)).toBe(3);
     let prev = 0;
-    for (let h = 0; h <= 1; h += 0.01) {
-      const s = heatStep(h);
+    for (let e = 0; e <= 1; e += 0.01) {
+      const s = energyStep(e);
       expect(s).toBeGreaterThanOrEqual(prev);
       prev = s;
     }
   });
 });
 
-describe("mixRgb", () => {
-  it("両端で元の色を返し、途中は線形に混ぜる", () => {
-    const a = [0, 100, 200];
-    const b = [200, 100, 0];
-    expect(mixRgb(a, b, 0)).toEqual([0, 100, 200]);
-    expect(mixRgb(a, b, 1)).toEqual([200, 100, 0]);
-    expect(mixRgb(a, b, 0.5)).toEqual([100, 100, 100]);
-    // 範囲外は丸める
-    expect(mixRgb(a, b, 2)).toEqual([200, 100, 0]);
+describe("collectNetworkEdges", () => {
+  it("近接した励起ノードだけを結び、最大本数と次数上限を守る", () => {
+    const xs = [0, 12, 24, 200];
+    const ys = [0, 0, 0, 0];
+    const energies = [0.9, 0.8, 0.7, 0.9];
+    const indices = [0, 1, 2, 3];
+    const edges = collectNetworkEdges(xs, ys, energies, indices, 4, 30, 10);
+    expect(edges.length).toBeGreaterThan(0);
+    // 遠すぎるノード 3 は結ばれない
+    expect(edges.every((edge) => edge.a !== 3 && edge.b !== 3)).toBe(true);
+    // 近いペアほど強度が高い
+    expect(edges[0].strength).toBeGreaterThan(0);
+  });
+
+  it("ノードが 1 個以下または maxEdges=0 なら空配列を返す", () => {
+    expect(collectNetworkEdges([0], [0], [1], [0], 1, 30, 10)).toEqual([]);
+    expect(collectNetworkEdges([0, 10], [0, 0], [1, 1], [0, 1], 2, 30, 0)).toEqual([]);
   });
 });
 
@@ -178,7 +183,7 @@ describe("projectPoint", () => {
   it("カメラに近づきすぎた点でも倍率は頭打ちになる", () => {
     projectPoint(0, 0, 5000, makeCamera(0, 0, 1000), out);
     expect(Number.isFinite(out.scale)).toBe(true);
-    expect(out.scale).toBeLessThan(2.7);
+    expect(out.scale).toBeLessThan(2.6);
   });
 
   it("ヨーで回すと、奥行きの違う点の左右がずれる（視差）", () => {
@@ -190,27 +195,27 @@ describe("projectPoint", () => {
   });
 });
 
-describe("vortexAccel", () => {
+describe("fieldForce", () => {
   const out = { x: 0, y: 0 };
 
-  it("接線成分は半径方向に直交し、spin の符号で回る向きが変わる", () => {
-    vortexAccel(10, 0, 50, 1, 0, out);
+  it("接線成分は半径方向に直交し、swirl の符号で回る向きが変わる", () => {
+    fieldForce(10, 0, 50, 1, 0, out);
     expect(out.x).toBeCloseTo(0);
     expect(out.y).toBeGreaterThan(0);
-    vortexAccel(10, 0, 50, -1, 0, out);
+    fieldForce(10, 0, 50, -1, 0, out);
     expect(out.y).toBeLessThan(0);
   });
 
-  it("radial が正なら外へ、負なら中心へ向く", () => {
-    vortexAccel(0, 10, 50, 0, 1, out);
+  it("push が正なら外へ、負なら中心へ向く", () => {
+    fieldForce(0, 10, 50, 0, 1, out);
     expect(out.y).toBeGreaterThan(0);
-    vortexAccel(0, 10, 50, 0, -1, out);
+    fieldForce(0, 10, 50, 0, -1, out);
     expect(out.y).toBeLessThan(0);
   });
 
   it("影響は距離で減衰する", () => {
-    const nearF = vortexAccel(5, 0, 50, 1, 0, out);
-    const farF = vortexAccel(150, 0, 50, 1, 0, out);
+    const nearF = fieldForce(5, 0, 50, 1, 0, out);
+    const farF = fieldForce(150, 0, 50, 1, 0, out);
     expect(nearF).toBeGreaterThan(farF);
     expect(farF).toBeLessThan(0.001);
   });

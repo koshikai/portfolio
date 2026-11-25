@@ -18,30 +18,49 @@
 }
 
 /* デザインはライトを基準に決める。ダークは同じトークンの差し替えだけで
-   成立させ、ダーク専用の UI 分岐は作らない。 */
+   成立させ、ダーク専用の UI 分岐は作らない。
+   有彩色のアクセントは置かず、白・灰・黒の濃淡だけで構成する。 */
 :root {
   interpolate-size: allow-keywords;
   color-scheme: light;
-  --background: #fafaf7;
-  --surface: #f3f2ec;
-  --foreground: #17171a;
-  --muted: #62626a;
-  --border: #e4e3dc;
-  --accent: #c0392b;
-  --accent-weak: rgba(192, 57, 43, 0.08);
+
+  --bg-light: #ffffff;
+  --bg-dark: #0a0a0a;
+  --surface-light: #f4f4f4;
+  --surface-dark: #141414;
+  --fg-light: #0a0a0a;
+  --fg-dark: #f2f2f2;
+  --muted-light: #595959;
+  --muted-dark: #949494;
+  --border-light: #dcdcdc;
+  --border-dark: #262626;
+  --accent-light: #0a0a0a;
+  --accent-dark: #ffffff;
+  --accent-weak-light: rgba(10, 10, 10, 0.08);
+  --accent-weak-dark: rgba(255, 255, 255, 0.12);
+
+  --background: var(--bg-light);
+  --surface: var(--surface-light);
+  --foreground: var(--fg-light);
+  --muted: var(--muted-light);
+  --border: var(--border-light);
+  --accent: var(--accent-light);
+  --accent-weak: var(--accent-weak-light);
 
   /* イージングの共通トークン。場所ごとに着地の感触が変わらないよう、ここに寄せる */
   --e-out: cubic-bezier(0.22, 1, 0.36, 1);
 
   @supports (color: light-dark(white, black)) {
-    --background: light-dark(#fafaf7, #131315);
-    --surface: light-dark(#f3f2ec, #1a1a1d);
-    --foreground: light-dark(#17171a, #ecebe7);
-    --muted: light-dark(#62626a, #8e8e88);
-    --border: light-dark(#e4e3dc, #2a2a2c);
-    --accent: light-dark(#c0392b, #e4675b);
-    --accent-weak: light-dark(rgba(192, 57, 43, 0.08), rgba(228, 103, 91, 0.12));
+    --background: light-dark(var(--bg-light), var(--bg-dark));
+    --surface: light-dark(var(--surface-light), var(--surface-dark));
+    --foreground: light-dark(var(--fg-light), var(--fg-dark));
+    --muted: light-dark(var(--muted-light), var(--muted-dark));
+    --border: light-dark(var(--border-light), var(--border-dark));
+    --accent: light-dark(var(--accent-light), var(--accent-dark));
+    --accent-weak: light-dark(var(--accent-weak-light), var(--accent-weak-dark));
   }
+
+  accent-color: var(--accent);
 }
 
 :root.dark,
@@ -52,13 +71,13 @@
 @supports not (color: light-dark(white, black)) {
   :root.dark,
   :root:has(> head > meta[name="color-scheme"][content="dark"]) {
-    --background: #131315;
-    --surface: #1a1a1d;
-    --foreground: #ecebe7;
-    --muted: #8e8e88;
-    --border: #2a2a2c;
-    --accent: #e4675b;
-    --accent-weak: rgba(228, 103, 91, 0.12);
+    --background: var(--bg-dark);
+    --surface: var(--surface-dark);
+    --foreground: var(--fg-dark);
+    --muted: var(--muted-dark);
+    --border: var(--border-dark);
+    --accent: var(--accent-dark);
+    --accent-weak: var(--accent-weak-dark);
   }
 }
 
@@ -81,8 +100,8 @@ h3 {
 }
 
 ::selection {
-  background: var(--accent-weak);
-  color: var(--accent);
+  background: var(--foreground);
+  color: var(--background);
 }
 
 @layer components {

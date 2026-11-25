@@ -46,7 +46,7 @@ function applyTheme(theme: Theme) {
   }
   const themeColorMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   if (themeColorMeta) {
-    themeColorMeta.content = isDark ? "#131315" : "#fafaf7";
+    themeColorMeta.content = isDark ? "#0a0a0a" : "#ffffff";
   }
 }
 

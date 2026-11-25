@@ -38,7 +38,7 @@ try {
     var meta = document.querySelector('meta[name="color-scheme"]');
     if (meta) meta.content = "dark";
     var themeColor = document.querySelector('meta[name="theme-color"]');
-    if (themeColor) themeColor.content = "#131315";
+    if (themeColor) themeColor.content = "#0a0a0a";
   }
 
   var modelCtx =
@@ -130,7 +130,7 @@ export const Route = createRootRoute({
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { name: "text-scale", content: "scale" },
         { name: "color-scheme", content: "light" },
-        { name: "theme-color", content: "#fafaf7" },
+        { name: "theme-color", content: "#ffffff" },
         { title: site.title },
         { name: "description", content: site.description },
         { name: "keywords", content: site.keywords.join(", ") },
