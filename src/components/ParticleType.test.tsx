@@ -8,6 +8,7 @@ import {
   maskFromAlpha,
   morphEnvelope,
   pairByColumns,
+  parseCssRgb,
   ParticleType,
   projectPoint,
   scatterGlyph,
@@ -218,6 +219,22 @@ describe("fieldForce", () => {
     const farF = fieldForce(150, 0, 50, 1, 0, out);
     expect(nearF).toBeGreaterThan(farF);
     expect(farF).toBeLessThan(0.001);
+  });
+});
+
+describe("parseCssRgb", () => {
+  it("解決済みの hex / rgb / rgba / color(srgb) を RGB 文字列へ変換する", () => {
+    expect(parseCssRgb("#0a0a0a")).toBe("10, 10, 10");
+    expect(parseCssRgb("#fff")).toBe("255, 255, 255");
+    expect(parseCssRgb("rgb(242, 242, 242)")).toBe("242, 242, 242");
+    expect(parseCssRgb("rgba(10, 10, 10, 0.8)")).toBe("10, 10, 10");
+    expect(parseCssRgb("color(srgb 1 0.5 0)")).toBe("255, 128, 0");
+  });
+
+  it("未解決の light-dark() や完全透明を黒として誤解釈しない", () => {
+    expect(parseCssRgb("light-dark(#0a0a0a, #f2f2f2)")).toBeNull();
+    expect(parseCssRgb("rgba(0, 0, 0, 0)")).toBeNull();
+    expect(parseCssRgb("")).toBeNull();
   });
 });
 

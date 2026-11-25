@@ -144,19 +144,41 @@ function fontFor(width: number, height: number, word: string): number {
   return Math.min(byWidth, height * 0.6, 210);
 }
 
-function readColor(name: string, fallback: string): string {
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  if (!value) return fallback;
-  if (value.startsWith("#")) {
+/**
+ * 計算済み CSS 色文字列（`#hex` / `rgb(...)` / `rgba(...)` / `color(srgb ...)`）を
+ * `"r, g, b"` 形式へ変換する。`light-dark(...)` のような未解決文字列や完全透明は null を返す。
+ */
+export function parseCssRgb(value: string): string | null {
+  const v = value.trim();
+  if (!v) return null;
+  if (v.startsWith("#")) {
     const hex =
-      value.length === 4
-        ? `#${value[1]}${value[1]}${value[2]}${value[2]}${value[3]}${value[3]}`
-        : value.slice(0, 7);
+      v.length === 4
+        ? `#${v[1]}${v[1]}${v[2]}${v[2]}${v[3]}${v[3]}`
+        : v.length >= 7
+          ? v.slice(0, 7)
+          : "";
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return null;
     const int = Number.parseInt(hex.slice(1), 16);
     return `${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255}`;
   }
-  const parts = value.match(/[\d.]+/g);
-  return parts && parts.length >= 3 ? `${parts[0]}, ${parts[1]}, ${parts[2]}` : fallback;
+  const rgbMatch = v.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[\s,/]+([\d.]+%?))?\s*\)$/i);
+  if (rgbMatch) {
+    if (rgbMatch[4] !== undefined) {
+      const a = rgbMatch[4].endsWith("%") ? Number.parseFloat(rgbMatch[4]) / 100 : Number.parseFloat(rgbMatch[4]);
+      if (a === 0) return null;
+    }
+    return `${Math.round(Number(rgbMatch[1]))}, ${Math.round(Number(rgbMatch[2]))}, ${Math.round(Number(rgbMatch[3]))}`;
+  }
+  const srgbMatch = v.match(/^color\(\s*srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+%?))?\s*\)$/i);
+  if (srgbMatch) {
+    if (srgbMatch[4] !== undefined) {
+      const a = srgbMatch[4].endsWith("%") ? Number.parseFloat(srgbMatch[4]) / 100 : Number.parseFloat(srgbMatch[4]);
+      if (a === 0) return null;
+    }
+    return `${Math.round(Number(srgbMatch[1]) * 255)}, ${Math.round(Number(srgbMatch[2]) * 255)}, ${Math.round(Number(srgbMatch[3]) * 255)}`;
+  }
+  return null;
 }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -501,8 +523,20 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
     const V = { x: 0, y: 0 };
 
     const readTheme = () => {
-      inkRgb = readColor("--foreground", "10, 10, 10");
-      const bg = readColor("--background", "255, 255, 255").split(",").map(Number);
+      // カスタムプロパティ（--foreground / --background）は light-dark() 未評価のまま返るため、
+      // ブラウザが解決済みの計算済み color / backgroundColor から RGB を読む。
+      const isDarkClass =
+        document.documentElement.classList.contains("dark") ||
+        document.querySelector('meta[name="color-scheme"]')?.getAttribute("content") === "dark";
+      const fgFallback = isDarkClass ? "242, 242, 242" : "10, 10, 10";
+      const bgFallback = isDarkClass ? "10, 10, 10" : "255, 255, 255";
+
+      inkRgb =
+        parseCssRgb(getComputedStyle(wrap).color) ??
+        parseCssRgb(getComputedStyle(document.body).color) ??
+        fgFallback;
+      const bgRgb = parseCssRgb(getComputedStyle(document.body).backgroundColor) ?? bgFallback;
+      const bg = bgRgb.split(",").map(Number);
       dark = (0.299 * bg[0] + 0.587 * bg[1] + 0.114 * bg[2]) / 255 < 0.5;
       styles = [];
       for (let l = 0; l < LEVELS; l++) {
@@ -943,9 +977,9 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
       const maxTrail = fontSize * 0.24;
       const shockW = fontSize * 0.18;
 
-      // 普段は 0.22..0.82 の範囲に収め、励起時だけ 1.0 の純黒／純白まで伸ばす
-      const alphaFloor = dark ? 0.26 : 0.2;
-      const alphaRange = dark ? 0.52 : 0.56;
+      // 普段は階調内に収め、励起時だけ 1.0 の純黒／純白まで伸ばす（ダーク時は視認性のため下限を上げる）
+      const alphaFloor = dark ? 0.36 : 0.22;
+      const alphaRange = dark ? 0.56 : 0.56;
       const fade = 24;
       bucketCount.fill(0);
       let netCount = 0;
@@ -1205,7 +1239,7 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
           ctx.lineWidth = 0.75;
           for (let k = 0; k < edges.length; k++) {
             const edge = edges[k];
-            const alpha = edge.strength * (dark ? 0.42 : 0.32);
+            const alpha = edge.strength * (dark ? 0.5 : 0.32);
             ctx.beginPath();
             ctx.moveTo(px[edge.a], py[edge.a]);
             ctx.lineTo(px[edge.b], py[edge.b]);
@@ -1221,7 +1255,7 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
       // 3. 高速移動中の極細ベクター軌跡線
       if (animate) {
         ctx.lineWidth = 0.9;
-        ctx.strokeStyle = `rgba(${inkRgb}, ${dark ? 0.32 : 0.24})`;
+        ctx.strokeStyle = `rgba(${inkRgb}, ${dark ? 0.4 : 0.24})`;
         ctx.beginPath();
         let hasTrails = false;
         for (let i = 0; i < n; i++) {
@@ -1237,6 +1271,7 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
       }
 
       // 4. 粒子本体（モノクロ 16 段階のバッチ描画）＋ 高励起・基準点の極細クロスヘア
+      ctx.globalCompositeOperation = dark ? "lighter" : "source-over";
       for (let b = 0; b < LEVELS; b++) {
         const startAt = bucketCount[b];
         const endAt = bucketCount[b + 1];
@@ -1260,6 +1295,7 @@ export function ParticleType({ words = [], label, className = "" }: ParticleType
         }
         ctx.fill();
       }
+      ctx.globalCompositeOperation = "source-over";
 
       // 5. ミニマル計測器 HUD
       const box = {
