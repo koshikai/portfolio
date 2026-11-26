@@ -25,6 +25,11 @@ const THIS_SITE: Evidence = { label: "このサイト", href: "/engineering#pipe
 const HOMELAB: Evidence = { label: "Immich の GPU オフロード", href: "/cases/immich-distributed" };
 const DEPLOY: Evidence = { label: "デプロイ自動化", href: "/cases/deploy-automation" };
 const MATHKB: Evidence = { label: "MathKB", href: "/cases/mathkb" };
+const AGENT_PROFILES: Evidence = { label: "5 プロファイル分離", href: "/cases/agent-profiles" };
+const SHARED_SKILLS: Evidence = { label: "共有スキルの集約", href: "/cases/shared-skills" };
+const SECRETS_BOUNDARY: Evidence = { label: "秘密を見せないログイン", href: "/cases/secrets-boundary" };
+const AGENT_BACKUP: Evidence = { label: "状態の日次バックアップ", href: "/cases/agent-state-backup" };
+const LCM_MISREAD: Evidence = { label: "圧縮監視の計測取り違え", href: "/cases/lcm-misread" };
 
 export const capabilities: Capability[] = [
   {
@@ -45,7 +50,7 @@ export const capabilities: Capability[] = [
   {
     area: "Infrastructure",
     tools: ["Linux", "Docker", "Proxmox", "Nginx", "self-hosting"],
-    evidence: [HOMELAB, THIS_SITE],
+    evidence: [HOMELAB, THIS_SITE, AGENT_BACKUP],
   },
   {
     area: "CI/CD",
@@ -55,7 +60,7 @@ export const capabilities: Capability[] = [
   {
     area: "AI",
     tools: ["LLM", "AI エージェント", "MCP"],
-    evidence: [SMOKE_IT, RESEARCH_AGENT, AGENT_OPS, HOMELAB, MATHKB],
+    evidence: [SMOKE_IT, RESEARCH_AGENT, AGENT_OPS, AGENT_PROFILES, SHARED_SKILLS, SECRETS_BOUNDARY, LCM_MISREAD, HOMELAB, MATHKB],
   },
 ];
 
