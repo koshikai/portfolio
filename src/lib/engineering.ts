@@ -29,6 +29,7 @@ const AGENT_PROFILES: Evidence = { label: "5 プロファイル分離", href: "/
 const SHARED_SKILLS: Evidence = { label: "共有スキルの集約", href: "/cases/shared-skills" };
 const SECRETS_BOUNDARY: Evidence = { label: "秘密を見せないログイン", href: "/cases/secrets-boundary" };
 const AGENT_BACKUP: Evidence = { label: "状態の日次バックアップ", href: "/cases/agent-state-backup" };
+const LCM_MISREAD: Evidence = { label: "圧縮監視の計測取り違え", href: "/cases/lcm-misread" };
 
 export const capabilities: Capability[] = [
   {
@@ -59,7 +60,7 @@ export const capabilities: Capability[] = [
   {
     area: "AI",
     tools: ["LLM", "AI エージェント", "MCP"],
-    evidence: [SMOKE_IT, RESEARCH_AGENT, AGENT_OPS, AGENT_PROFILES, SHARED_SKILLS, SECRETS_BOUNDARY, HOMELAB, MATHKB],
+    evidence: [SMOKE_IT, RESEARCH_AGENT, AGENT_OPS, AGENT_PROFILES, SHARED_SKILLS, SECRETS_BOUNDARY, LCM_MISREAD, HOMELAB, MATHKB],
   },
 ];
 
