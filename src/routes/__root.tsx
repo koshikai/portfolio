@@ -146,9 +146,11 @@ export const Route = createRootRoute({
         { name: "twitter:creator", content: site.twitterHandle },
       ],
       links: [
-        { rel: "icon", href: "/favicon.ico" },
-        { rel: "apple-touch-icon", href: "/apple-icon.png" },
-        { rel: "manifest", href: "/manifest.json" },
+        // アイコン差し替え時は v を上げる（Cloudflare 4 時間キャッシュ・ブラウザ・検索エンジンの再取得対策）
+        { rel: "icon", href: "/favicon.ico?v=2", sizes: "any" },
+        { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon.png?v=2" },
+        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-icon.png?v=2" },
+        { rel: "manifest", href: "/manifest.json?v=2" },
         { rel: "api-catalog", href: "/.well-known/api-catalog" },
         { rel: "ai-catalog", href: "/.well-known/ai-catalog.json" },
         { rel: "service-desc", href: "/.well-known/mcp/server-card.json" },
